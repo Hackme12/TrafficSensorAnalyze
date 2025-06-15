@@ -1,13 +1,10 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, from_json, when, to_timestamp, lit, count
-from pyspark.sql.types import StructType, StringType, DoubleType
-import pandas as pd
-from insertData_4 import fact_traffic
+from insertData_3 import fact_traffic
 import matplotlib.pyplot as plt
 
 # 1. Start Spark Session
 spark = (SparkSession.builder.appName("TrafficSensorStream")
-          .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.4")
+          #.config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.4")
           .config("spark.jars", "/Users/pranaya/Desktop/mysql-connector-j-9.3.0.jar")
          .getOrCreate())
 
