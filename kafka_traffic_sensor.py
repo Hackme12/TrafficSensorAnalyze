@@ -43,12 +43,26 @@ kafka_df = spark.readStream.format("kafka") \
     .option("maxOffsetsPerTrigger", "100") \
     .load()
 
+# Data cleanup and normalization
+
 df_json = kafka_df.selectExpr("CAST(value AS STRING) as json_str")
 parsed_df = df_json \
     .select(from_json(col("json_str"), expected_schema).alias("data")) \
     .select("data.*") \
     .withColumn("Timestamp", to_timestamp("Timestamp"))
 
+
+# Invalid value filtering
+parsed_df = parsed_df.filter(
+    (col("Traffic_Volume") >= 0) &
+    (col("Traffic_Speed") >= 0) &
+    (col("Traffic_Density") >= 0) &
+    (col("Travel_Time") >= 0) &
+    (col("Emission_Levels") >= 0)
+)
+
+# # drop duplicates
+# parsed_df = parsed_df.dropDuplicates(["Timestamp", "Traffic_Volume"])
 
 # Split valid and malformed rows
 valid_df = parsed_df.filter(col("data").isNotNull())
